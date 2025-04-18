@@ -36,7 +36,7 @@ export const sendEmail = async ({
                </a>
             </div>
             <p style="font-size: 14px; color: #999;">
-               This link will expire in 1 hour. If you didn’t request this, you can safely ignore this email.
+               This link will expire in 10 hour. If you didn’t request this, you can safely ignore this email.
             </p>
             <hr style="border: none; border-top: 1px solid #eee;">
             <p style="font-size: 12px; color: #bbb; text-align: center;">
@@ -47,27 +47,31 @@ export const sendEmail = async ({
 
       if (emailType === "VERIFY") {
          await User.findByIdAndUpdate(userId, {
-            verifyToken: hashedToken,
-            verifyTokenExpiry: expiryTime,
+            $set: {
+               verifyToken: hashedToken,
+               verifyTokenExpiry: expiryTime,
+            },
          });
       } else if (emailType === "RESET") {
          await User.findByIdAndUpdate(userId, {
-            forgotPasswordToken: hashedToken,
-            forgotPasswordTokenExpiry: expiryTime,
+            $set: {
+               forgotPasswordToken: hashedToken,
+               forgotPasswordTokenExpiry: expiryTime,
+            },
          });
       }
 
       const transport = nodemailer.createTransport({
-         host: "sandbox.smtp.mailtrap.io",
-         port: 2525,
+         host: process.env.NODEMAILER_MAIL,
+         port: Number(process.env.NODEMAILER_PORT),
          auth: {
-            user: "b1bffaaca6dfd7",
-            pass: "c45a0030a3588e",
+            user: process.env.NODEMAILER_USER,
+            pass: process.env.NODEMAILER_PASS,
          },
       });
 
       const mailOptions = {
-         from: "elsesourav@gmail.com",
+         from: process.env.DEVELOPER_MAIL,
          to: email,
          subject:
             emailType === "VERIFY"
@@ -80,9 +84,14 @@ export const sendEmail = async ({
       return mailResponse;
    } catch (error: unknown) {
       if (error instanceof Error) {
-         throw new Error(error.message);
+         return new Response(JSON.stringify({ error: error.message }), {
+            status: 500,
+         });
       } else {
-         throw new Error("An unknown error occurred while sending email.");
+         return new Response(
+            JSON.stringify({ error: "Unknown error occurred." }),
+            { status: 500 }
+         );
       }
    }
 };

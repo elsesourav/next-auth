@@ -37,9 +37,14 @@ export async function POST(request: NextRequest) {
       });
    } catch (error: unknown) {
       if (error instanceof Error) {
-         throw new Error(error.message);
+         return new Response(JSON.stringify({ error: error.message }), {
+            status: 500,
+         });
       } else {
-         throw new Error("An unknown error occurred while signup page.");
+         return new Response(
+            JSON.stringify({ error: "Unknown error occurred." }),
+            { status: 500 }
+         );
       }
    }
 }

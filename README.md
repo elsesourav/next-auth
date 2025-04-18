@@ -1,3 +1,19 @@
+# 1 create error handler and use every where
+# 2 add all string in a different file
+# 3 
+
+
+
+
+
+
+
+
+
+
+
+
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
